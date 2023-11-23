@@ -9,10 +9,7 @@
         <script src="three.min.js"></script>
         <script src="CSG.js"></script> <!-- Включване на библиотека за CSG -->
         <script>
-            // Задача: конструирайте цилиндрична тръба като
-            // стената ѝ има дебелина
 
-            
             var renderer = new THREE.WebGLRenderer();
             renderer.setSize( window.innerWidth, window.innerHeight );
             renderer.setAnimationLoop( drawFrame );
@@ -38,13 +35,31 @@
             outer_ring.material = new THREE.MeshLambertMaterial({color:'gray'});
             part.add(outer_ring)
 
-            var small_outer = new THREE.Mesh(new THREE.CylinderGeometry(0.8,0.8,1,80));
-            var small_inner = new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,1,80));
-            var csg = new CSG();
-            csg.subtract([small_outer, small_inner]);
-            var inner_ring=csg.toMesh();
+            var small_outer = new THREE.Mesh(new THREE.CylinderGeometry(1,1,1,80));
+            var small_inner = new THREE.Mesh(new THREE.CylinderGeometry(0.8,0.8,1,80));
+            var csg1 = new CSG();
+            csg1.subtract([small_outer, small_inner]);
+            var inner_ring=csg1.toMesh();
+            inner_ring.material = new THREE.MeshLambertMaterial({color: 'gray'});
+            part.add(inner_ring);
 
+            var r = 1.15;
+            var n = 10;
 
+            var alpha = Math.PI / 5;
+            var ball = new THREE.Mesh(new THREE.SphereGeometry(0.3,32,32));
+            ball.material = new THREE.MeshLambertMaterial({color: 'gray'});
+
+            for (var i = 0; i < n; i++)
+            {
+                var x = r * Math.cos(i * alpha);
+                var z = r * Math.sin(i * alpha);
+
+                var ball = new THREE.Mesh(new THREE.SphereGeometry(0.3,32,32));
+                ball.material = new THREE.MeshLambertMaterial({color: 'gray'});
+                ball.position.set(x,0,z);
+                part.add(ball);
+            }
 
             scene.add(part);
             
@@ -55,10 +70,9 @@
             
             function drawFrame()
             {
-                // въртим тръбата
                 part.rotation.x += 0.005;
-                part.rotation.y += 0.003;
-                part.rotation.z += 0.010;
+               // part.rotation.y += 0.003;
+               // part.rotation.z += 0.010;
                 
                 renderer.render( scene, camera );
             }
