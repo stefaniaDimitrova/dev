@@ -1,0 +1,67 @@
+<html>
+    <head>
+        <style>
+            body { margin: 0; }
+            canvas { width: 100%; height: 100% }
+        </style>
+    </head>
+    <body>
+        <script src="three.min.js"></script>
+        <script src="CSG.js"></script> <!-- Включване на библиотека за CSG -->
+        <script>
+            // Задача: конструирайте цилиндрична тръба като
+            // стената ѝ има дебелина
+
+            
+            var renderer = new THREE.WebGLRenderer();
+            renderer.setSize( window.innerWidth, window.innerHeight );
+            renderer.setAnimationLoop( drawFrame );
+            document.body.appendChild( renderer.domElement );
+
+            var scene = new THREE.Scene();
+            scene.background = new THREE.Color( 'lavenderblush' );
+            
+            var aspect = window.innerWidth/window.innerHeight;
+            camera = new THREE.PerspectiveCamera( 30, aspect );
+            camera.position.set( 0, 0, 16 );
+            camera.lookAt( new THREE.Vector3() );
+
+            var part = new THREE.Group()
+
+            var big_outer = new THREE.Mesh( new THREE.CylinderGeometry( 1.5, 1.5, 1, 80 ) );
+            var big_inner = new THREE.Mesh( new THREE.CylinderGeometry( 1.3, 1.3, 1, 80 ) );
+
+            var csg = new CSG();
+            csg.subtract( [big_outer, big_inner] );
+            
+            var outer_ring = csg.toMesh();
+            outer_ring.material = new THREE.MeshLambertMaterial({color:'gray'});
+            part.add(outer_ring)
+
+            var small_outer = new THREE.Mesh(new THREE.CylinderGeometry(0.8,0.8,1,80));
+            var small_inner = new THREE.Mesh(new THREE.CylinderGeometry(0.5,0.5,1,80));
+            var csg = new CSG();
+            csg.subtract([small_outer, small_inner]);
+            var inner_ring=csg.toMesh();
+
+
+
+            scene.add(part);
+            
+            var light = new THREE.PointLight();
+            light.position.set( 0, 5, 10 );
+            scene.add( light );
+            
+            
+            function drawFrame()
+            {
+                // въртим тръбата
+                part.rotation.x += 0.005;
+                part.rotation.y += 0.003;
+                part.rotation.z += 0.010;
+                
+                renderer.render( scene, camera );
+            }
+        </script>
+    </body>
+</html>
